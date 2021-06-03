@@ -11,7 +11,7 @@ class camera_recorder:
 
     def __init__(self):
         self.bridge = CvBridge()
-        self.image_pub_result = rospy.Publisher("/camera_recorder/img", Image, queue_size=1)
+        self.image_pub_result = rospy.Publisher("/camera_recorder/image", Image, queue_size=1)
         self.image_sub = rospy.Subscriber("/usb_cam/image_raw", Image, self.image, queue_size=1)
         self.image_sub = rospy.Subscriber("/fiducial_vertices", FiducialArray, self.markers, queue_size=1)
         self.record = False

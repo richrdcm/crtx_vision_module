@@ -1,0 +1,39 @@
+<launch>
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+        <param name="video_device" value="/dev/video2" />
+        <param name="image_width" value="4096" />
+        <param name="image_height" value="2160" />
+        <param name="pixel_format" value="mjpeg" />
+        <param name="camera_frame_id" value="usb_cam" />
+        <param name="io_method" value="mmap"/>
+    </node>
+    <arg name="camera" default="/usb_cam"/>
+    <arg name="image" default="image_raw"/>
+    <arg name="transport" default="compressed"/>
+    <arg name="fiducial_len" default="0.1"/>
+    <arg name="fiducial_len_override" default="5-8: 0.1, 9: 0.2"/>
+    <arg name="dictionary" default="0"/>
+    <arg name="do_pose_estimation" default="true"/>
+    <!-- If vis_msgs set to true, pose estimation will be published with ROS standard vision_msgs -->
+    <arg name="vis_msgs" default="false"/>
+    <arg name="ignore_fiducials" default="" />
+
+    <node pkg="aruco_detect" name="aruco_detect"
+          type="aruco_detect" output="screen" respawn="false">
+        <param name="image_transport" value="$(arg transport)"/>
+        <param name="publish_images" value="true" />
+        <param name="fiducial_len" value="$(arg fiducial_len)"/>
+        <param name="fiducial_len_override" value="$(arg fiducial_len_override)"/>
+        <param name="dictionary" value="$(arg dictionary)"/>
+        <param name="do_pose_estimation" value="$(arg do_pose_estimation)"/>
+        <param name="vis_msgs" value="$(arg vis_msgs)"/>
+        <param name="ignore_fiducials" value="$(arg ignore_fiducials)"/>
+        <remap from="camera/compressed"
+               to="$(arg camera)/$(arg image)/$(arg transport)"/>
+        <remap from="camera_info" to="$(arg camera)/camera_info"/>
+    </node>
+    <node name="data_base_recorder" pkg="data_base_recorder" type="camera_recorder.py" output="screen" >
+    </node>
+    <node pkg="rosbag" type="record" name="rosbag_record_cam" args="record /camera_recorder/image"/>
+
+</launch>
