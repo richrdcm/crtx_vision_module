@@ -17,6 +17,9 @@ class Corners:
         self.ty = ty
         self.tz = tz
 
+    def __repr__(self):
+        return "Corner ix:% s, iy:% s, tx:% s, ty:% s, tz:% s" % (self.ix, self.iy, self.tx, self.ty, self.tz)
+
 
 class CameraRecorder:
 
@@ -52,7 +55,7 @@ class CameraRecorder:
             self.record = True
         # cv2.imshow("aqui",warped)
         # cv2.waitKey(0)
-        self.image_pub_result.publish(self.bridge.cv2_to_imgmsg(warped))
+        self.image_pub_result.publish(self.bridge.cv2_to_imgmsg(warped, "bgr8"))
 
         # try:
         #     if self.record:
@@ -66,8 +69,12 @@ class CameraRecorder:
             transformation = data.fiducials[i]
             id = transformation.fiducial_id
             # print("id: {}".format(id))
-            cx = transformation.x0 + (transformation.x2 - transformation.x0)
-            cy = transformation.y0 + (transformation.y2 - transformation.y0)
+            x_min = min(transformation.x0, transformation.x1, transformation.x2, transformation.x3)
+            x_max = max(transformation.x0, transformation.x1, transformation.x2, transformation.x3)
+            y_min = min(transformation.y0, transformation.y1, transformation.y2, transformation.y3)
+            y_max = max(transformation.y0, transformation.y1, transformation.y2, transformation.y3)
+            cx = x_min + (x_max - x_min) / 2
+            cy = y_min + (y_max - y_min) / 2
             self.corners[id].ix = cx
             self.corners[id].iy = cy
             if id == 9:
@@ -88,14 +95,25 @@ class CameraRecorder:
         # compute the width of the new image, which will be the
         # maximum distance between bottom-right and bottom-left
         # x-coordiates or the top-right and top-left x-coordinates
-        bl = corners[5]
-        br = corners[7]
-        tr = corners[6]
-        tl = corners[8]
+        bl = corners[5] # 8
+        br = corners[6] # 7
+        tl = corners[8] # 5
+        tr = corners[7]  # 6
+
+        print("=" * 50)
+        print(corners[5])
+        print(corners[7])
+        print(corners[6])
+        print(corners[8])
+        print("=" * 50)
+
 
         rect = np.zeros((4, 2), dtype="float32")
-        rect_ = np.array([[tl.tx - tl.tx, tl.ty - tl.ty], [tr.tx - tl.tx, tr.ty - tl.ty],
-                          [br.tx - tl.tx, br.ty - tl.ty], [bl.tx - tl.tx, bl.ty - tl.ty]])
+        rect_ = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy],
+                         [br.ix, br.iy], [bl.ix, bl.iy]])
+
+        # rect_ = np.array([[tl.tx - tl.tx, tl.ty - tl.ty], [tr.tx - tl.tx, tr.ty - tl.ty],
+        #                   [br.tx - tl.tx, br.ty - tl.ty], [bl.tx - tl.tx, bl.ty - tl.ty]])
         dst_ = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy],
                          [br.ix, br.iy], [bl.ix, bl.iy]])
 
@@ -106,14 +124,14 @@ class CameraRecorder:
         rect[1] = rect_[np.argmin(diff)]
         rect[3] = rect_[np.argmax(diff)]
 
-        widthA = np.sqrt(((br.ix - bl.ix) ** 2) + ((br.iy - bl.iy) ** 2))
-        widthB = np.sqrt(((tr.ix - tl.ix) ** 2) + ((tr.iy - tl.iy) ** 2))
+        widthA = br.ix - bl.ix # np.sqrt(((br.ix - bl.ix) ** 2) + ((br.iy - bl.iy) ** 2))
+        widthB = tr.ix - tl.ix # np.sqrt(((tr.ix - tl.ix) ** 2) + ((tr.iy - tl.iy) ** 2))
         maxWidth = max(int(widthA), int(widthB))
         # compute the height of the new image, which will be the
         # maximum distance between the top-right and bottom-right
         # y-coordinates or the top-left and bottom-left y-coordinates
-        heightA = np.sqrt(((tr.ix - br.ix) ** 2) + ((tr.iy - br.iy) ** 2))
-        heightB = np.sqrt(((tl.ix - bl.ix) ** 2) + ((tl.iy - bl.iy) ** 2))
+        heightA = tr.iy - br.iy # np.sqrt(((tr.ix - br.ix) ** 2) + ((tr.iy - br.iy) ** 2))
+        heightB = tl.ix - bl.ix # np.sqrt(((tl.ix - bl.ix) ** 2) + ((tl.iy - bl.iy) ** 2))
         maxHeight = max(int(heightA), int(heightB))
         # now that we have the dimensions of the new image, construct
         # the set of destination points to obtain a "birds eye view",
@@ -126,12 +144,14 @@ class CameraRecorder:
             [maxWidth - 1, maxHeight - 1],
             [0, maxHeight - 1]], dtype="float32")
 
-        print(rect_)
-        print(dst_)
-        print(rect)
-        print(dst)
+        # print("=" * 50)
+        # print(rect_)
+        # print(dst_)
+        # print(rect)
+        # print(dst)
+        # print("=" * 50)
         # compute the perspective transform matrix and then apply it
-        M = cv2.getPerspectiveTransform(rect, dst_)
+        M = cv2.getPerspectiveTransform(rect, dst)
         warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))  # (maxWidth, maxHeight)
         # return the warped image
         return warped
