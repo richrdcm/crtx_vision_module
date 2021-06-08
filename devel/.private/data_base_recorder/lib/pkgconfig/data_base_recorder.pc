@@ -1,0 +1,8 @@
+prefix=/opt/crtx_vision_module/devel/.private/data_base_recorder
+
+Name: data_base_recorder
+Description: Description of data_base_recorder
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

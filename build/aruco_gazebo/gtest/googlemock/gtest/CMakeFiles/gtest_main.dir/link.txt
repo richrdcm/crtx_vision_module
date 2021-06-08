@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libgtest_main.so -o libgtest_main.so CMakeFiles/gtest_main.dir/src/gtest_main.cc.o  -L/opt/crtx_vision_module/build/aruco_gazebo/gtest/googlemock/gtest/src -Wl,-rpath,/opt/crtx_vision_module/build/aruco_gazebo/gtest/googlemock/gtest/src:/opt/crtx_vision_module/build/aruco_gazebo/gtest/googlemock/gtest -lpthread libgtest.so -lpthread 

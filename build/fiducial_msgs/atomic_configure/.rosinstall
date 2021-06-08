@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /opt/crtx_vision_module/devel/.private/fiducial_msgs/setup.sh

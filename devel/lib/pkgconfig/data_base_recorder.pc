@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/data_base_recorder/lib/pkgconfig/data_base_recorder.pc

@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/aruco_detect/lib/python2.7/dist-packages/aruco_detect/cfg/DetectorParamsConfig.py

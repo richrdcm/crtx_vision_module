@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/data_base_recorder/share/data_base_recorder/cmake/data_base_recorderConfig-version.cmake

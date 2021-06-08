@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/aruco_detect/include/aruco_detect/DetectorParamsConfig.h

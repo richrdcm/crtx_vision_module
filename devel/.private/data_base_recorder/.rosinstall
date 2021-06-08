@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /opt/crtx_vision_module/devel/.private/data_base_recorder/setup.sh

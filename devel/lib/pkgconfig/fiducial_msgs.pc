@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/fiducial_msgs/lib/pkgconfig/fiducial_msgs.pc

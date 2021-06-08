@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/fiducial_slam/lib/python2.7/dist-packages/fiducial_slam/srv/__init__.py

@@ -1,0 +1,12 @@
+Symlinking /opt/crtx_vision_module/devel/./setup.sh
+Symlinking /opt/crtx_vision_module/devel/./local_setup.zsh
+Symlinking /opt/crtx_vision_module/devel/./_setup_util.py
+Symlinking /opt/crtx_vision_module/devel/./setup.bash
+Symlinking /opt/crtx_vision_module/devel/./local_setup.bash
+Symlinking /opt/crtx_vision_module/devel/./setup.zsh
+Symlinking /opt/crtx_vision_module/devel/./cmake.lock
+Symlinking /opt/crtx_vision_module/devel/./env.sh
+Symlinking /opt/crtx_vision_module/devel/./local_setup.sh
+Symlinking /opt/crtx_vision_module/devel/lib/pkgconfig/catkin_tools_prebuild.pc
+Symlinking /opt/crtx_vision_module/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+Symlinking /opt/crtx_vision_module/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake

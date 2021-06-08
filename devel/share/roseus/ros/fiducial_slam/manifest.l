@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/fiducial_slam/share/roseus/ros/fiducial_slam/manifest.l

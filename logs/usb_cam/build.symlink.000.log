@@ -1,0 +1,5 @@
+Symlinking /opt/crtx_vision_module/devel/lib/libusb_cam.so
+Symlinking /opt/crtx_vision_module/devel/lib/pkgconfig/usb_cam.pc
+Symlinking /opt/crtx_vision_module/devel/lib/usb_cam/usb_cam_node
+Symlinking /opt/crtx_vision_module/devel/share/usb_cam/cmake/usb_camConfig-version.cmake
+Symlinking /opt/crtx_vision_module/devel/share/usb_cam/cmake/usb_camConfig.cmake

@@ -1,0 +1,1 @@
+/opt/crtx_vision_module/devel/.private/fiducial_msgs/share/common-lisp/ros/fiducial_msgs/msg/_package.lisp

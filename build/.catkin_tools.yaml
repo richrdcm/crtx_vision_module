@@ -1,0 +1,6 @@
+devel_space: /opt/crtx_vision_module/devel
+install: false
+install_space: /opt/crtx_vision_module/install
+profile: default
+source_space: /opt/crtx_vision_module/src
+workspace: /opt/crtx_vision_module
