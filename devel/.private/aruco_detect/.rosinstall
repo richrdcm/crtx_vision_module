@@ -1,2 +1,0 @@
-- setup-file:
-    local-name: /opt/crtx_vision_module/devel/.private/aruco_detect/setup.sh

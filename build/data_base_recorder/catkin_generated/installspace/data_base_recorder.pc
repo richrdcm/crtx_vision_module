@@ -1,8 +1,0 @@
-prefix=/opt/crtx_vision_module/install
-
-Name: data_base_recorder
-Description: Description of data_base_recorder
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

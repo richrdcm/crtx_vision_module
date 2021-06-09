@@ -7,6 +7,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import rospy
 import numpy as np
+from datetime import date, datetime
 
 
 class Corners:
@@ -31,6 +32,7 @@ class CameraRecorder:
         self.dummy_c = rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.transforms, queue_size=1)
         self.record = False
         self.last_time = rospy.Time.now()
+        self.save_location = "/mnt/ameli/live_dataset" # rospy.get_param("/save_location")  # "/mnt/ameli/live_dataset"
         # lower left:5, lower right:6, upper left:7, upper right:8
         self.corners = dict([
             (5, Corners(0, 0, 0, 0, 0)),
@@ -45,23 +47,24 @@ class CameraRecorder:
         except CvBridgeError as e:
             print(e)
 
+        print(self.save_location)
         # transformation
-        gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
         warped = self.perspective_transform(cv_image, self.corners)
-
         dt = (rospy.Time.now() - self.last_time).to_sec()
-        # print("dt: {}".format(dt))
         if (dt > 0.5):
             self.record = True
-        # cv2.imshow("aqui",warped)
-        # cv2.waitKey(0)
         self.image_pub_result.publish(self.bridge.cv2_to_imgmsg(warped, "bgr8"))
 
-        # try:
-        #     if self.record:
-        #         self.image_pub_result.publish(self.bridge.cv2_to_imgmsg(warped, "bgr8"))
-        # except CvBridgeError as e:
-        #     print(e)
+        try:
+            if self.record:
+                now = datetime.now()
+                current_time = now.strftime("%H-%M-%S-%f")
+                today = date.today().strftime("%Y-%m-%d")
+                name = self.save_location + "/" + today + "-" + current_time + "-" + str(rospy.Time.now().nsecs) + ".jpg"
+                cv2.imwrite(name, warped)
+                print("recording...")
+        except CvBridgeError as e:
+            print(e)
 
     def markers(self, data):
 
@@ -92,68 +95,42 @@ class CameraRecorder:
             self.corners[id].tz = transformation.transform.translation.z
 
     def perspective_transform(self, image, corners):
-        # compute the width of the new image, which will be the
-        # maximum distance between bottom-right and bottom-left
-        # x-coordiates or the top-right and top-left x-coordinates
-        bl = corners[5] # 8
-        br = corners[6] # 7
-        tl = corners[8] # 5
-        tr = corners[7]  # 6
 
-        print("=" * 50)
-        print(corners[5])
-        print(corners[7])
-        print(corners[6])
-        print(corners[8])
-        print("=" * 50)
+        tl = corners[8]
+        tr = corners[6]
+        br = corners[7]
+        bl = corners[5]
 
+        pts1 = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy], [br.ix, br.iy], [bl.ix, bl.iy]], dtype="float32")
 
-        rect = np.zeros((4, 2), dtype="float32")
-        rect_ = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy],
-                         [br.ix, br.iy], [bl.ix, bl.iy]])
-
-        # rect_ = np.array([[tl.tx - tl.tx, tl.ty - tl.ty], [tr.tx - tl.tx, tr.ty - tl.ty],
-        #                   [br.tx - tl.tx, br.ty - tl.ty], [bl.tx - tl.tx, bl.ty - tl.ty]])
-        dst_ = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy],
-                         [br.ix, br.iy], [bl.ix, bl.iy]])
-
-        s = rect_.sum(axis=1)
-        rect[0] = rect_[np.argmin(s)]
-        rect[2] = rect_[np.argmax(s)]
-        diff = np.diff(rect_, axis=1)
-        rect[1] = rect_[np.argmin(diff)]
-        rect[3] = rect_[np.argmax(diff)]
-
-        widthA = br.ix - bl.ix # np.sqrt(((br.ix - bl.ix) ** 2) + ((br.iy - bl.iy) ** 2))
-        widthB = tr.ix - tl.ix # np.sqrt(((tr.ix - tl.ix) ** 2) + ((tr.iy - tl.iy) ** 2))
+        widthA = br.ix - bl.ix
+        widthB = tr.ix - tl.ix
         maxWidth = max(int(widthA), int(widthB))
-        # compute the height of the new image, which will be the
-        # maximum distance between the top-right and bottom-right
-        # y-coordinates or the top-left and bottom-left y-coordinates
-        heightA = tr.iy - br.iy # np.sqrt(((tr.ix - br.ix) ** 2) + ((tr.iy - br.iy) ** 2))
-        heightB = tl.ix - bl.ix # np.sqrt(((tl.ix - bl.ix) ** 2) + ((tl.iy - bl.iy) ** 2))
+        heightA = br.iy - tr.iy
+        heightB = bl.iy - tl.iy
         maxHeight = max(int(heightA), int(heightB))
-        # now that we have the dimensions of the new image, construct
-        # the set of destination points to obtain a "birds eye view",
-        # (i.e. top-down view) of the image, again specifying points
-        # in the top-left, top-right, bottom-right, and bottom-left
-        # order
-        dst = np.array([
+
+        pts2 = np.array([
             [0, 0],
-            [maxWidth - 1, 0],
-            [maxWidth - 1, maxHeight - 1],
-            [0, maxHeight - 1]], dtype="float32")
+            [maxWidth, 0],
+            [maxWidth, maxHeight],
+            [0, maxHeight]], dtype="float32")
 
         # print("=" * 50)
-        # print(rect_)
-        # print(dst_)
-        # print(rect)
-        # print(dst)
+        # print(tl)
+        # print(tr)
+        # print(br)
+        # print(bl)
         # print("=" * 50)
+        # print("=" * 50)
+        # print(pts1)
+        # print(pts2)
+        # print("=" * 50)
+
         # compute the perspective transform matrix and then apply it
-        M = cv2.getPerspectiveTransform(rect, dst)
-        warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))  # (maxWidth, maxHeight)
-        # return the warped image
+        M = cv2.getPerspectiveTransform(pts1, pts2)
+        warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
+
         return warped
 
 

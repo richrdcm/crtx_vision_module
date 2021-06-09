@@ -1,1 +1,0 @@
-/opt/crtx_vision_module/devel/.private/usb_cam/share/usb_cam/cmake/usb_camConfig.cmake
