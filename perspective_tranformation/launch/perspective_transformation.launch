@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(find usb_cam)/launch/fake_video.launch"/>
+    <include file="$(find aruco_detect)/launch/aruco_detect.launch"/>
+
+    <node name="data_base_recorder" pkg="data_base_recorder" type="camera_recorder.py" output="screen" >
+        <param name="save_location" value="/mnt/ameli/live_dataset"/>
+    </node>
+</launch>

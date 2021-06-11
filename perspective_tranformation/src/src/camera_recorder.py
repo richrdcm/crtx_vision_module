@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-import rospy
 from sensor_msgs.msg import Image
 from fiducial_msgs.msg import FiducialArray, FiducialTransform, FiducialTransformArray
 from cv_bridge import CvBridge, CvBridgeError
@@ -32,7 +31,8 @@ class CameraRecorder:
         self.dummy_c = rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.transforms, queue_size=1)
         self.record = False
         self.last_time = rospy.Time.now()
-        self.save_location = "/mnt/ameli/live_dataset" # rospy.get_param("/save_location")  # "/mnt/ameli/live_dataset"
+        self.save_location = "/mnt/ameli/live_dataset" #   # "/mnt/ameli/live_dataset"
+
         # lower left:5, lower right:6, upper left:7, upper right:8
         self.corners = dict([
             (5, Corners(0, 0, 0, 0, 0)),
@@ -148,4 +148,6 @@ def main(args):
 #  cv2.destroyAllWindows()
 
 if __name__ == '__main__':
+
+    print(rospy.get_param("/save_location"))
     main(sys.argv)
