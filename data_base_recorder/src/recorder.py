@@ -21,6 +21,7 @@ class CameraRecorder:
         self.dynamic_record = True
         self.last_time = rospy.Time.now()
         self.save_location = "/mnt/ameli/live_dataset"
+        self.rec_id = 9
         self.cfg_server = Server(RecorderConfig, self.server_cfg_callback)
 
 
@@ -31,6 +32,7 @@ class CameraRecorder:
         self.dynamic_record = config["start_recording"]
         self.topic_to_record = config["topic_to_record"]
         self.dummy_a.unregister()
+        self.rec_id = config["rec_marker"]
         self.dummy_a = rospy.Subscriber(self.topic_to_record, Image, self.get_image, queue_size=1)
         return config
 
@@ -60,7 +62,7 @@ class CameraRecorder:
         for i in range(len(data.fiducials)):
             transformation = data.fiducials[i]
             id = transformation.fiducial_id
-            if id == 9:
+            if id == self.rec_id:
                 self.last_time = rospy.Time.now()
                 self.record = False
                 rospy.loginfo("Not recording frames...")

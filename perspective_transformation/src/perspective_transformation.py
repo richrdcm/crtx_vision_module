@@ -6,7 +6,8 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import rospy
 import numpy as np
-
+from dynamic_reconfigure.server import Server
+from data_base_recorder.cfg import RecorderConfig
 
 class Corners:
     def __init__(self, ix, iy, tx, ty, tz):
@@ -28,6 +29,11 @@ class PerspectiveTransformation:
         self.dummy_a = rospy.Subscriber("/usb_cam/image_raw", Image, self.image, queue_size=1)
         self.dummy_b = rospy.Subscriber("/fiducial_vertices", FiducialArray, self.markers, queue_size=1)
         self.dummy_c = rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.transforms, queue_size=1)
+        self.cfg_server = Server(RecorderConfig, self.server_cfg_callback)
+        self.bl_id = 8
+        self.br_id = 5
+        self.tr_id = 6
+        self.tl_id = 7
 
         # lower left:5, lower right:6, upper left:7, upper right:8
         self.corners = dict([
@@ -37,6 +43,14 @@ class PerspectiveTransformation:
             (8, Corners(0, 0, 0, 0, 0)),
             (9, Corners(0, 0, 0, 0, 0))
             ])
+
+    def server_cfg_callback(self, config, level):
+        self.bl_id = config["bl"]
+        self.br_id = config["br"]
+        self.tr_id = config["tr"]
+        self.tl_id = config["tl"]
+
+        return config
 
     def image(self, data):
         try:
@@ -77,10 +91,10 @@ class PerspectiveTransformation:
     def perspective_transform(self, image, corners):
 
         # fu setup tl: 8, tr:6, br:7, bl:5
-        tl = corners[7]
-        tr = corners[6]
-        br = corners[5]
-        bl = corners[8]
+        tl = corners[self.tl_id]
+        tr = corners[self.tr_id]
+        br = corners[self.br_id]
+        bl = corners[self.bl_id]
 
         pts1 = np.array([[tl.ix, tl.iy], [tr.ix, tr.iy], [br.ix, br.iy], [bl.ix, bl.iy]], dtype="float32")
 
