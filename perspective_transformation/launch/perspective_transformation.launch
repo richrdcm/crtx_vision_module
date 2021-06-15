@@ -1,0 +1,5 @@
+<launch>
+    <node name="perspective_transformation" pkg="perspective_transformation" type="perspective_transformation.py" output="screen" >
+        <param name="save_location" value="/mnt/ameli/live_dataset"/>
+    </node>
+</launch>

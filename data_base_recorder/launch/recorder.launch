@@ -1,8 +1,9 @@
 <launch>
     <include file="$(find usb_cam)/launch/fake_video.launch"/>
     <include file="$(find aruco_detect)/launch/aruco_detect.launch"/>
-
-    <node name="data_base_recorder" pkg="data_base_recorder" type="camera_recorder.py" output="screen" >
+    <include file="$(find perspective_transformation)/launch/perspective_transformation.launch"/>
+    <node name = "crtx_rqt_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = "true" output = "screen" args = "--perspective-file $(find data_base_recorder)/../config_files/crtx_gui.perspective"/>
+    <node name="data_base_recorder" pkg="data_base_recorder" type="recorder.py" output="screen" >
         <param name="save_location" value="/mnt/ameli/live_dataset"/>
     </node>
 </launch>

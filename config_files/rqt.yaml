@@ -1,0 +1,21 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      save_location: /mnt/ameli/live_dataset
+      start_recording: true
+      state: true
+      topic_to_record: /perspective_transformation/image
+      type: ''
+    state: []
+  save_location: /mnt/ameli/live_dataset
+  start_recording: true
+  topic_to_record: /perspective_transformation/image
+state: []
