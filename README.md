@@ -169,7 +169,13 @@ This will open the rqt gui. On the dynamic reconfigure tab you have some adjusta
 * On data_base_recorder: Choose the directory where the database is going to be saved. Pause or start the recording.
 Choose the topic to be recorded. Choose the aruco markers arrangement. 
 
+rqt_gui looks like this:
 
+<p align="center">
+  <a>
+    <img src="images/Screenshot.png" alt="setup" width="500" height="300">
+  </a>
+</p>
 
 <!-- ROSLAUNCH FILES -->
 ## Roslaunch files
