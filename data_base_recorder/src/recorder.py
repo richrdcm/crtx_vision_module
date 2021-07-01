@@ -8,6 +8,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from datetime import date, datetime
 from dynamic_reconfigure.server import Server
 from data_base_recorder.cfg import RecorderConfig
+import numpy as np
 
 
 class CameraRecorder:
@@ -17,6 +18,7 @@ class CameraRecorder:
         self.topic_to_record = "/perspective_transformation/image"
         self.dummy_a = rospy.Subscriber(self.topic_to_record, Image, self.get_image, queue_size=1)
         self.dummy_b = rospy.Subscriber("/fiducial_vertices", FiducialArray, self.get_markers, queue_size=1)
+        self.image_pub_result = rospy.Publisher("/recorded_image/image", Image, queue_size=1)
         self.record = True
         self.dynamic_record = True
         self.last_time = rospy.Time.now()
@@ -43,7 +45,7 @@ class CameraRecorder:
             print(e)
 
         dt = (rospy.Time.now() - self.last_time).to_sec()
-        if (dt > 0.5):
+        if (dt > 1.0):
             self.record = True
 
         try:
@@ -52,8 +54,12 @@ class CameraRecorder:
                 current_time = now.strftime("%H-%M-%S-%f")
                 today = date.today().strftime("%Y-%m-%d")
                 name = self.save_location + "/" + today + "-" + current_time + "-" + str(rospy.Time.now().nsecs) + ".jpg"
-                cv2.imwrite(name, cv_image)
+                # cv2.imwrite(name, cv_image)
+                self.image_pub_result.publish(image)
                 rospy.loginfo("Recording frames...")
+            else:
+                cv_image = np.zeros([cv_image.shape[0], cv_image.shape[1], cv_image.shape[2]], dtype=np.uint8)
+                self.image_pub_result.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
         except CvBridgeError as e:
             print(e)
 
